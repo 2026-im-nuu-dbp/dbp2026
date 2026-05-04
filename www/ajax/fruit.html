@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>水果 14 天價格走勢圖</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f5f5f5; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        canvas { max-width: 100%; height: 500px; }
+        .loading { text-align: center; color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🍎 水果每日批發價格趨勢 (最近 14 天)</h2>
+    <div id="loader" class="loading">正在從政府 API 抓取資料並運算中...</div>
+    <canvas id="fruitChart"></canvas>
+</div>
+
+<script>
+    // 指定想觀察的 10 種水果名稱
+    const targetFruits = ["鳳梨-金鑽鳳梨", "香蕉", "木瓜-網室木瓜", "蓮霧-粉紅種", "葡萄-巨峰", "芭樂-珍珠芭樂", "西瓜-大西瓜", "甜瓜-美濃", "愛文芒果", "火龍果-紅肉"];
+
+    // 取得過去 14 天的日期陣列 (格式: 112.05.01 需符合農委會民國年格式)
+    function getPast14Days() {
+        const dates = [];
+        for (let i = 13; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const year = d.getFullYear() - 1911; // 轉民國年
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            dates.push(`${year}.${month}.${day}`);
+        }
+        return dates;
+    }
+
+    async function fetchDataAndDraw() {
+        const dateLabels = getPast14Days();
+        const startDate = dateLabels[0];
+        const endDate = dateLabels[13];
+
+        // 政府開放資料 API URL (以農產品批發價格為例)
+        // 注意：實務上若遇到跨網域 (CORS) 問題，建議透過代理伺服器或使用 JSONP
+        const api_url = `https://data.oa.agriculture.gov.tw/api/v1/AgriProductsTransPrice/?Start_time=${startDate}&End_time=${endDate}`;
+
+        try {
+            const response = await fetch(api_url);
+            const result = await response.json();
+            const rawData = result.Data;
+
+            // 1. 初始化資料集結構
+            const datasets = targetFruits.map(fruit => ({
+                label: fruit,
+                data: new Array(14).fill(null), // 預設 14 天資料為 null
+                borderColor: `hsl(${Math.random() * 360}, 70%, 50%)`, // 隨機顏色
+                fill: false,
+                tension: 0.1
+            }));
+
+            // 2. 填入 API 資料
+            rawData.forEach(item => {
+                const fruitIndex = targetFruits.indexOf(item.CropName);
+                const dateIndex = dateLabels.indexOf(item.TransDate);
+                
+                if (fruitIndex !== -1 && dateIndex !== -1) {
+                    // 取平均價 (Avg_Price)
+                    datasets[fruitIndex].data[dateIndex] = item.Avg_Price;
+                }
+            });
+
+            document.getElementById('loader').style.display = 'none';
+            drawChart(dateLabels, datasets);
+
+        } catch (error) {
+            console.error("抓取失敗:", error);
+            document.getElementById('loader').innerText = "資料抓取失敗，請確認網路連線或 API 狀態。";
+        }
+    }
+
+    function drawChart(labels, datasets) {
+        const ctx = document.getElementById('fruitChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: '平均價格 (元/公斤)' },
+                        beginAtZero: false
+                    },
+                    x: {
+                        title: { display: true, text: '交易日期 (民國)' }
+                    }
+                }
+            }
+        });
+    }
+
+    // 啟動程式
+    fetchDataAndDraw();
+</script>
+
+</body>
+</html>

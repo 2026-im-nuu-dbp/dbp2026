@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISS 國際太空站即時追蹤</title>
+    <!-- Leaflet.js 地圖套件 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0b0d17;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            text-align: center;
+            padding: 0.6rem 1rem;
+            background: rgba(255, 255, 255, 0.07);
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        header h1 { font-size: 1.2rem; }
+        .info-item { font-size: 1rem; }
+        .highlight { color: #00d4ff; font-weight: bold; }
+        .status { font-size: 0.8rem; color: #888; }
+        #map {
+            flex: 1;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🛸 ISS 國際太空站即時追蹤</h1>
+        <div class="info-item">緯度: <span id="lat" class="highlight">載入中...</span></div>
+        <div class="info-item">經度: <span id="lon" class="highlight">載入中...</span></div>
+        <div class="status">上次更新: <span id="timestamp">-</span></div>
+    </header>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const api_url = 'https://api.wheretheiss.at/v1/satellites/25544';
+
+        // 初始化地圖，使用深色底圖
+        const map = L.map('map', { zoomControl: true }).setView([0, 0], 2);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+            maxZoom: 10
+        }).addTo(map);
+
+        // 自訂 ISS 圖示
+        const issIcon = L.divIcon({
+            html: '<div style="font-size:2rem;line-height:1;">🛸</div>',
+            iconSize: [36, 36],
+            iconAnchor: [18, 18],
+            className: ''
+        });
+
+        // 建立標記與軌跡線
+        let marker = null;
+        const pathCoords = [];
+        const pathLine = L.polyline([], { color: '#00d4ff', weight: 2, opacity: 0.6 }).addTo(map);
+
+        async function getISS() {
+            try {
+                const response = await fetch(api_url);
+                const data = await response.json();
+
+                const lat = parseFloat(data.latitude);
+                const lon = parseFloat(data.longitude);
+                const time = new Date().toLocaleTimeString();
+
+                // 更新資訊列
+                document.getElementById('lat').textContent = lat.toFixed(4);
+                document.getElementById('lon').textContent = lon.toFixed(4);
+                document.getElementById('timestamp').textContent = time;
+
+                // 更新地圖標記
+                if (!marker) {
+                    marker = L.marker([lat, lon], { icon: issIcon })
+                        .addTo(map)
+                        .bindPopup('ISS 國際太空站')
+                        .openPopup();
+                    map.setView([lat, lon], 2);
+                } else {
+                    marker.setLatLng([lat, lon]);
+                    marker.getPopup().setContent(
+                        `ISS 國際太空站<br>緯度: ${lat.toFixed(4)}<br>經度: ${lon.toFixed(4)}`
+                    );
+                }
+
+                // 記錄軌跡（保留最近 60 個點）
+                pathCoords.push([lat, lon]);
+                if (pathCoords.length > 60) pathCoords.shift();
+                pathLine.setLatLngs(pathCoords);
+
+                console.log(`更新成功: ${lat}, ${lon}`);
+            } catch (error) {
+                console.error('抓取資料失敗:', error);
+                document.getElementById('lat').textContent = '錯誤';
+                document.getElementById('lon').textContent = '錯誤';
+            }
+        }
+
+        // 初始執行一次
+        getISS();
+
+        // 每 5 秒自動更新
+        setInterval(getISS, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISS 國際太空站即時追蹤</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0b0d17;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid #444;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .data-box {
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+        .highlight {
+            color: #00d4ff;
+            font-weight: bold;
+        }
+        .status {
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ISS 國際太空站位置</h1>
+        <div class="data-box">緯度: <span id="lat" class="highlight">載入中...</span></div>
+        <div class="data-box">經度: <span id="lon" class="highlight">載入中...</span></div>
+        <p class="status">上次更新時間: <span id="timestamp">-</span></p>
+    </div>
+
+    <script>
+        // 設定 API 網址
+        const api_url = 'http://api.open-notify.org/iss-now.json';
+
+        async function getISS() {
+            try {
+                // 執行 AJAX 請求
+                const response = await fetch(api_url);
+                const data = await response.json();
+
+                // 解構賦值取得座標
+                const { latitude, longitude } = data.iss_position;
+                const time = new Date().toLocaleTimeString();
+
+                // 更新 DOM 元素
+                document.getElementById('lat').textContent = latitude;
+                document.getElementById('lon').textContent = longitude;
+                document.getElementById('timestamp').textContent = time;
+
+                console.log(`更新成功: ${latitude}, ${longitude}`);
+            } catch (error) {
+                console.error('抓取資料失敗:', error);
+                document.getElementById('lat').textContent = "錯誤";
+                document.getElementById('lon').textContent = "錯誤";
+            }
+        }
+
+        // 初始執行一次
+        getISS();
+
+        // 設定每 5 秒 (5000 毫秒) 自動更新一次
+        setInterval(getISS, 5000);
+    </script>
+</body>
+</html>
