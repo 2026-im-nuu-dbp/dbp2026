@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESTful API 教學範例 - 測試用戶端</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #dd6b20;
+        }
+        
+        .output {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .output pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .users-grid {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .user-card {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-info h3 {
+            color: #2d3748;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .user-info p {
+            color: #718096;
+            font-size: 12px;
+            margin: 3px 0;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .user-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+            min-width: 60px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .status-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-inactive {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .status-deleted {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        
+        .search-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .api-docs {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+        .api-docs h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .endpoint {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .endpoint-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .endpoint-desc {
+            color: #718096;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .method-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 11px;
+            margin-right: 8px;
+            color: white;
+        }
+        
+        .method-get {
+            background: #4299e1;
+        }
+        
+        .method-post {
+            background: #48bb78;
+        }
+        
+        .method-put {
+            background: #ed8936;
+        }
+        
+        .method-delete {
+            background: #f56565;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #667eea;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .success-msg {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        
+        .error-msg {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 RESTful API 教學範例</h1>
+            <p>使用PHP和MySQL建立的CRUD操作示例。支援建立、讀取、更新和刪除使用者資料。</p>
+        </header>
+        
+        <div class="main-grid">
+            <!-- 建立新使用者 -->
+            <div class="card">
+                <h2>➕ 建立新使用者</h2>
+                <form id="createForm">
+                    <div class="form-group">
+                        <label>名稱 *</label>
+                        <input type="text" id="createName" placeholder="輸入使用者名稱" required>
+                    </div>
+                    <div class="form-group">
+                        <label>電子郵件 *</label>
+                        <input type="email" id="createEmail" placeholder="輸入電子郵件" required>
+                    </div>
+                    <div class="form-group">
+                        <label>電話</label>
+                        <input type="text" id="createPhone" placeholder="輸入電話號碼">
+                    </div>
+                    <div class="form-group">
+                        <label>年齡</label>
+                        <input type="number" id="createAge" placeholder="輸入年齡" min="1" max="120">
+                    </div>
+                    <div class="form-group">
+                        <label>城市</label>
+                        <input type="text" id="createCity" placeholder="輸入城市">
+                    </div>
+                    <div class="form-group">
+                        <label>國家</label>
+                        <input type="text" id="createCountry" placeholder="輸入國家">
+                    </div>
+                    <div class="form-group">
+                        <label>個人簡介</label>
+                        <textarea id="createBio" placeholder="輸入個人簡介"></textarea>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" class="btn-success" onclick="createUser()">建立使用者</button>
+                        <button type="button" class="btn-primary" onclick="clearCreateForm()">清除表單</button>
+                    </div>
+                    <div id="createOutput"></div>
+                </form>
+            </div>
+            
+            <!-- 查詢使用者 -->
+            <div class="card">
+                <h2>🔍 查詢使用者</h2>
+                <div class="form-group">
+                    <label>使用者ID</label>
+                    <input type="number" id="userId" placeholder="輸入使用者ID" min="1">
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="getUserById()">查詢單一使用者</button>
+                    <button class="btn-primary" onclick="getAllUsers()">查詢所有使用者</button>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>狀態篩選</label>
+                    <select id="statusFilter">
+                        <option value="">全部</option>
+                        <option value="active">啟用中</option>
+                        <option value="inactive">停用中</option>
+                        <option value="deleted">已刪除</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="getUsersByStatus()">依狀態篩選</button>
+                </div>
+                <div id="queryOutput"></div>
+            </div>
+        </div>
+        
+        <!-- 搜尋使用者 -->
+        <div class="search-section">
+            <h2>🔎 搜尋使用者</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>搜尋關鍵字</label>
+                    <input type="text" id="searchKeyword" placeholder="輸入搜尋關鍵字">
+                </div>
+                <div class="form-group">
+                    <label>搜尋欄位</label>
+                    <select id="searchField">
+                        <option value="">全部欄位</option>
+                        <option value="name">名稱</option>
+                        <option value="email">電子郵件</option>
+                        <option value="phone">電話</option>
+                        <option value="city">城市</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn-primary" onclick="searchUsers()" style="width: 100%;">搜尋</button>
+                </div>
+            </div>
+            <div id="searchOutput"></div>
+        </div>
+        
+        <!-- 使用者列表和編輯 -->
+        <div class="card">
+            <h2>👥 使用者列表</h2>
+            <button class="btn-primary" onclick="loadAllUsers()" style="width: 100%; margin-bottom: 15px;">重新加載列表</button>
+            <div id="usersList"></div>
+        </div>
+        
+        <!-- API文件 -->
+        <div class="api-docs">
+            <h2>📖 API 文件</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    <span class="method-badge method-get">GET</span> /api/users
+                </div>
+                <div class="endpoint-desc">
+                    <strong>描述：</strong>取得所有使用者列表（支援分頁和篩選）<br>
+                    <strong>查詢參數：</strong>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>status: 篩選狀態 (active, inactive, deleted)</li>
+                        <li>page: 分頁號碼 (預設: 1)</li>
+                        <li>limit: 每頁數量 (預設: 10)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    <span class="method-badge method-get">GET</span> /api/users/{id}
+                </div>
+                <div class="endpoint-desc">
+                    <strong>描述：</strong>根據ID取得單一使用者資訊<br>
+                    <strong>參數：</strong> id - 使用者ID
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    <span class="method-badge method-post">POST</span> /api/users
+                </div>
+                <div class="endpoint-desc">
+                    <strong>描述：</strong>建立新使用者<br>
+                    <strong>必需欄位：</strong> name, email<br>
+                    <strong>選用欄位：</strong> phone, bio, age, city, country
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    <span class="method-badge method-put">PUT</span> /api/users/{id}
+                </div>
+                <div class="endpoint-desc">
+                    <strong>描述：</strong>更新使用者資訊<br>
+                    <strong>參數：</strong> id - 使用者ID<br>
+                    <strong>可更新欄位：</strong> name, email, phone, bio, age, city, country, status
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    <span class="method-badge method-delete">DELETE</span> /api/users/{id}
+                </div>
+                <div class="endpoint-desc">
+                    <strong>描述：</strong>刪除使用者<br>
+                    <strong>參數：</strong> id - 使用者ID<br>
+                    <strong>查詢參數：</strong> hard=true (進行硬刪除，預設為軟刪除)
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    <span class="method-badge method-get">GET</span> /api/search
+                </div>
+                <div class="endpoint-desc">
+                    <strong>描述：</strong>搜尋使用者<br>
+                    <strong>查詢參數：</strong>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>q: 搜尋關鍵字 (必需)</li>
+                        <li>field: 指定搜尋欄位 (name, email, phone, city, country)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = '/rest2/index.php/api';
+        
+        // 建立新使用者
+        function createUser() {
+            const name = document.getElementById('createName').value.trim();
+            const email = document.getElementById('createEmail').value.trim();
+            
+            if (!name || !email) {
+                showError('createOutput', '名稱和電子郵件為必填項');
+                return;
+            }
+            
+            const userData = {
+                name: name,
+                email: email,
+                phone: document.getElementById('createPhone').value.trim(),
+                age: document.getElementById('createAge').value ? parseInt(document.getElementById('createAge').value) : null,
+                city: document.getElementById('createCity').value.trim(),
+                country: document.getElementById('createCountry').value.trim(),
+                bio: document.getElementById('createBio').value.trim()
+            };
+            
+            const output = document.getElementById('createOutput');
+            output.innerHTML = '<div class="loading"></div> 建立中...';
+            
+            fetch(`${API_URL}/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    output.innerHTML = `<div class="success-msg">✓ ${data.message}</div>
+                        <div class="output"><pre>${JSON.stringify(data.data, null, 2)}</pre></div>`;
+                    clearCreateForm();
+                    setTimeout(() => loadAllUsers(), 1500);
+                } else {
+                    showError('createOutput', data.message);
+                }
+            })
+            .catch(error => {
+                showError('createOutput', '請求失敗: ' + error.message);
+            });
+        }
+        
+        // 查詢單一使用者
+        function getUserById() {
+            const id = document.getElementById('userId').value;
+            if (!id) {
+                showError('queryOutput', '請輸入使用者ID');
+                return;
+            }
+            
+            const output = document.getElementById('queryOutput');
+            output.innerHTML = '<div class="loading"></div> 查詢中...';
+            
+            fetch(`${API_URL}/users/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        output.innerHTML = `<div class="success-msg">✓ ${data.message}</div>
+                            <div class="output"><pre>${JSON.stringify(data.data, null, 2)}</pre></div>`;
+                    } else {
+                        showError('queryOutput', data.message);
+                    }
+                })
+                .catch(error => showError('queryOutput', '請求失敗: ' + error.message));
+        }
+        
+        // 查詢所有使用者
+        function getAllUsers() {
+            const output = document.getElementById('queryOutput');
+            output.innerHTML = '<div class="loading"></div> 加載中...';
+            
+            fetch(`${API_URL}/users`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const info = data.data.pagination;
+                        output.innerHTML = `<div class="success-msg">✓ ${data.message}</div>
+                            <div class="output"><pre>分頁資訊: 總計 ${info.total} 筆，第 ${info.page} 頁，每頁 ${info.limit} 筆\n\n${JSON.stringify(data.data.users, null, 2)}</pre></div>`;
+                    } else {
+                        showError('queryOutput', data.message);
+                    }
+                })
+                .catch(error => showError('queryOutput', '請求失敗: ' + error.message));
+        }
+        
+        // 依狀態篩選
+        function getUsersByStatus() {
+            const status = document.getElementById('statusFilter').value;
+            if (!status) {
+                showError('queryOutput', '請選擇狀態');
+                return;
+            }
+            
+            const output = document.getElementById('queryOutput');
+            output.innerHTML = '<div class="loading"></div> 篩選中...';
+            
+            fetch(`${API_URL}/users?status=${status}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        output.innerHTML = `<div class="success-msg">✓ 篩選 ${status} 狀態的使用者</div>
+                            <div class="output"><pre>${JSON.stringify(data.data.users, null, 2)}</pre></div>`;
+                    } else {
+                        showError('queryOutput', data.message);
+                    }
+                })
+                .catch(error => showError('queryOutput', '請求失敗: ' + error.message));
+        }
+        
+        // 搜尋使用者
+        function searchUsers() {
+            const keyword = document.getElementById('searchKeyword').value.trim();
+            const field = document.getElementById('searchField').value;
+            
+            if (!keyword) {
+                showError('searchOutput', '請輸入搜尋關鍵字');
+                return;
+            }
+            
+            const output = document.getElementById('searchOutput');
+            output.innerHTML = '<div class="loading"></div> 搜尋中...';
+            
+            let url = `${API_URL}/search?q=${encodeURIComponent(keyword)}`;
+            if (field) {
+                url += `&field=${field}`;
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        output.innerHTML = `<div class="success-msg">✓ 找到 ${data.data.length} 個結果</div>
+                            <div class="output"><pre>${JSON.stringify(data.data, null, 2)}</pre></div>`;
+                    } else {
+                        showError('searchOutput', data.message);
+                    }
+                })
+                .catch(error => showError('searchOutput', '請求失敗: ' + error.message));
+        }
+        
+        // 加載所有使用者到列表
+        function loadAllUsers() {
+            fetch(`${API_URL}/users?limit=100`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const usersList = document.getElementById('usersList');
+                        const users = data.data.users;
+                        
+                        if (users.length === 0) {
+                            usersList.innerHTML = '<p style="text-align: center; color: #718096;">沒有使用者</p>';
+                            return;
+                        }
+                        
+                        let html = '<div class="users-grid">';
+                        users.forEach(user => {
+                            const statusClass = `status-${user.status}`;
+                            html += `
+                                <div class="user-card">
+                                    <div class="user-info">
+                                        <h3>${user.name} <span class="status-badge ${statusClass}">${user.status}</span></h3>
+                                        <p>📧 ${user.email}</p>
+                                        ${user.phone ? `<p>📱 ${user.phone}</p>` : ''}
+                                        ${user.city ? `<p>🌍 ${user.city}${user.country ? ', ' + user.country : ''}</p>` : ''}
+                                        <p style="font-size: 11px; color: #a0aec0; margin-top: 8px;">ID: ${user.id} | 建立: ${user.created_at}</p>
+                                    </div>
+                                    <div class="user-actions">
+                                        <button class="btn-warning" onclick="editUser(${user.id})">編輯</button>
+                                        <button class="btn-danger" onclick="deleteUser(${user.id})">刪除</button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        usersList.innerHTML = html;
+                    }
+                })
+                .catch(error => console.error('加載使用者失敗:', error));
+        }
+        
+        // 編輯使用者
+        function editUser(id) {
+            const newName = prompt('輸入新名稱:');
+            if (!newName) return;
+            
+            const updateData = { name: newName };
+            
+            fetch(`${API_URL}/users/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('✓ 更新成功');
+                    loadAllUsers();
+                } else {
+                    alert('✗ 更新失敗: ' + data.message);
+                }
+            })
+            .catch(error => alert('更新失敗: ' + error.message));
+        }
+        
+        // 刪除使用者
+        function deleteUser(id) {
+            if (!confirm('確定要刪除此使用者嗎？')) return;
+            
+            fetch(`${API_URL}/users/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('✓ 刪除成功');
+                    loadAllUsers();
+                } else {
+                    alert('✗ 刪除失敗: ' + data.message);
+                }
+            })
+            .catch(error => alert('刪除失敗: ' + error.message));
+        }
+        
+        // 輔助函數
+        function showError(elementId, message) {
+            document.getElementById(elementId).innerHTML = `<div class="error-msg">✗ ${message}</div>`;
+        }
+        
+        function clearCreateForm() {
+            document.getElementById('createForm').reset();
+            document.getElementById('createOutput').innerHTML = '';
+        }
+        
+        // 頁面加載時載入使用者列表
+        window.addEventListener('load', () => {
+            loadAllUsers();
+        });
+    </script>
+</body>
+</html>
