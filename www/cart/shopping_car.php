@@ -4,7 +4,7 @@
     <meta charset="utf-8">
   </head>	
   <body bgcolor="LightYellow">
-    <p align="center"><img src='fig1.jpg'></p>
+    <p align="center" style="font-size: 24px; font-weight: bold;">購物車</p>
     <table border="0" align="center" width="800">
       <tr bgcolor="#ACACFF" height="30" align="center">
         <td>書號</td>

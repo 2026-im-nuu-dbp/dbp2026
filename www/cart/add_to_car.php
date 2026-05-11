@@ -51,7 +51,7 @@
     <meta charset="utf-8">
     </head>	
   <body bgcolor="lightyellow">
-    <p align="center"><img src="fig1.jpg"></p>
+    <p align="center" style="font-size: 24px; font-weight: bold;">聯大資管書店</p>
     <p align="center">您所選取的產品及數量已成功放入購物車！</p>
     <p align="center"><a href="catalog.php">繼續購物</a></p>                                                                              
   </body>

@@ -11,4 +11,5 @@
     <frame name="top" noresize scrolling="no" src="show_link.html">
     <frame name="bottom" noresize src="catalog.php">
   </frameset>
+
 </html>

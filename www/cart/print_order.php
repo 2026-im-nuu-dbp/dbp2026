@@ -17,16 +17,14 @@
     <h3>注意事項</h3>
     <ol type="1">
       <li>
-        訂購方法一：請填妥信用卡專用訂購單後裝訂，免貼郵票，
-        直接投郵即可，亦可放大傳真至 02-23695588。
+        訂購方法一：信用卡。
       </li>
       <li>
-        訂購方法二：請利用郵局劃撥單，填妥姓名、戶名、書名、數量、
-        電話，直接至郵局劃撥付款。帳號：12345678戶名：快樂書城
+        訂購方法二：轉帳。帳號：12345678戶名：聯大資管書店，轉帳完成後請來電洽詢 02-34567890。
       </li>
       <li>
         寄書與補書：您將於付款之後的3-5天收到書籍，若沒有收到，
-        請來電洽詢 02-23695599。
+        請來電洽詢 02-34567890。
       </li>
     </ol>
     <hr>
@@ -37,61 +35,6 @@
     <tr height="25">
       <td colspan="4">姓名：<u><?php echo $_COOKIE["name"] ?>
         <?php for ($i = 0; $i <= 100 - 2* strlen($_COOKIE["name"]); $i++) echo "&nbsp;"; ?></u>
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">電話：
-        <u><?php for ($i = 0; $i <= 100; $i++) echo "&nbsp;"; ?></u>
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">地址：
-        <u><?php for ($i = 0; $i <= 100; $i++) echo "&nbsp;"; ?></u>
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">
-        郵寄方式：□國內限時&nbsp;&nbsp;&nbsp;&nbsp;□國內掛號 (另加20元郵資)
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">
-        付款方式：□JCB CARD&nbsp;&nbsp;&nbsp;□VISA CARD&nbsp;&nbsp;&nbsp;□MASTER CARD
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">
-        信用卡卡號：<u><?php for ($i = 0; $i <= 89; $i++) echo "&nbsp;"; ?></u>
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">
-        有效日期：<u>西元<?php for ($i = 0; $i <= 85; $i++) echo "&nbsp;"; ?></u>
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">
-        簽名(與信用卡簽名相同)：<u><?php for ($i = 0; $i <= 66; $i++) echo "&nbsp;"; ?></u>
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">
-        支付總金額：<u><?php for ($i = 0; $i <= 89; $i++) echo "&nbsp;"; ?></u>
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">
-        開立發票：□二聯式&nbsp;&nbsp;&nbsp;&nbsp;□三聯式
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">
-        發票地址：<u><?php for ($i = 0; $i <= 93; $i++) echo "&nbsp;"; ?></u>
-      </td>
-    </tr>
-    <tr height="25">
-      <td colspan="4">
-        統一編號：<u><?php for ($i = 0; $i <= 93; $i++) echo "&nbsp;"; ?></u>
       </td>
     </tr>
     <tr height="25">
