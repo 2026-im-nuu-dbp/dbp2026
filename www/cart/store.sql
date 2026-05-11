@@ -41,7 +41,7 @@ INSERT INTO `product_list` (`book_no`, `book_name`, `price`) VALUES
 ('EN0010', 'HTML5網頁程式設計', 500),
 ('P766', 'PHP&MySQL網站開發', 580),
 ('P816', 'Python程式設計', 500),
-('P818', 'Visual C#程式設計', 500);
+('P818', 'Visual C#程式設計', 493);
 
 --
 -- 已傾印資料表的索引
