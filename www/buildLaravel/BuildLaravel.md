@@ -460,3 +460,23 @@ php artisan serve
 ```
 - 預期回應： 200 OK，回傳更新後的備忘錄資料。
 
+## 常用 Artisan 指令
+
+```bash
+# 模型及 Migration 相關
+php artisan make:model Todo -m           # 建立 Model 和 Migration
+php artisan make:model Todo -mc          # 建立 Model, Migration, Controller
+php artisan make:controller TodoController  # 建立 Controller
+php artisan migrate                      # 執行所有待執行的遷移
+php artisan migrate:rollback             # 回滾上一批遷移
+php artisan migrate:refresh              # 回滾並重新執行遷移
+
+# 快取相關
+php artisan config:cache                 # 配置快取
+php artisan route:cache                  # 路由快取
+
+# 其他實用指令
+php artisan tinker                       # 進入互動式 Shell
+php artisan make:request TodoRequest     # 建立 Request 類別
+php artisan make:middleware CheckTodo    # 建立 Middleware
+```
